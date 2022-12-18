@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import { User } from "../entity/User";
 import { HttpException } from "../utils/exception";
 import { QueryFailedError } from "typeorm";
+import { genToken, verifyToken } from "../utils/auth";
 
 const login = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -17,7 +18,8 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
         new HttpException(401, "Authentication information is incorrect.")
       );
     }
-    return res.send("yay!");
+    let token = genToken(user);
+    return res.json({ token });
   } catch (err) {
     return next(err);
   }
