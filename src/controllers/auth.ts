@@ -1,24 +1,46 @@
 import { Request, Response, NextFunction } from "express";
 import bcrypt from "bcrypt";
-import pool from "../database";
+import { User } from "../entity/User";
+import { HttpException } from "../utils/exception";
+import { QueryFailedError } from "typeorm";
 
 const login = async (req: Request, res: Response, next: NextFunction) => {
-  let { email, password } = req.body;
-  let [result]: any = await pool.query("SELECT id FROM `user` WHERE email=?", [
-    email,
-  ]);
-
-  console.log(result);
-  res.send("");
+  try {
+    let { email, password } = req.body;
+    let user = await User.findOne({
+      where: {
+        email,
+      },
+    });
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+      return next(
+        new HttpException(401, "Authentication information is incorrect.")
+      );
+    }
+    return res.send("yay!");
+  } catch (err) {
+    return next(err);
+  }
 };
 
 const register = async (req: Request, res: Response, next: NextFunction) => {
-  let { email, username, password, phone } = req.body;
-  let result = await pool.query(
-    "INSERT INTO `user` (`email`, `username`, `password`, `phone`) VALUES (?, ?, ?, ?)",
-    [email, username, await bcrypt.hash(password, 10), phone]
-  );
-  console.log(result);
+  try {
+    let { email, name, password, phone } = req.body;
+    let user = new User();
+    user.email = email;
+    user.name = name;
+    user.password = await bcrypt.hash(password, 10);
+    user.phone = phone;
+    await User.save(user);
+    return res.send("yay!");
+  } catch (err) {
+    if (err instanceof QueryFailedError) {
+      if (err.driverError?.code === "ER_DUP_ENTRY") {
+        return res.send("dup!");
+      }
+    }
+    return next(err);
+  }
 };
 
 export default {

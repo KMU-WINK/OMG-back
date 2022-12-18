@@ -1,14 +1,31 @@
-import express from "express";
+import express, { NextFunction, Request, Response } from "express";
 import router from "./routes";
-import conn from "./database";
+import { AppDataSource } from "./data-source";
+import { HttpException } from "./utils/exception";
 
-const app = express();
+AppDataSource.initialize().then(() => {
+  const app = express();
 
-app.use(
-  express.json({
-    limit: "5mb",
-  })
-);
-app.use("/api", router);
+  app.use(
+    express.json({
+      limit: "5mb",
+    })
+  );
+  app.use("/api", router);
+  app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+    if (err instanceof HttpException) {
+      res.status(err.status);
+      if (err.json) {
+        return res.json(err.json);
+      }
+      return res.send(err.message);
+    }
+    console.log(err);
+    if (res.headersSent) {
+      return res.end();
+    }
+    return res.status(500).send("");
+  });
 
-app.listen(8080, () => console.log("listening!"));
+  app.listen(8080, () => console.log("listening!"));
+});
