@@ -1,3 +1,5 @@
+import { ValidationError as OriValidationError } from "class-validator";
+
 export class HttpException extends Error {
   public status: number;
   public message: string;
@@ -12,5 +14,13 @@ export class HttpException extends Error {
     this.status = status;
     this.message = message;
     this.json = json;
+  }
+}
+
+export class ValidationError extends Error {
+  public errors: OriValidationError[];
+  constructor(errors: OriValidationError[]) {
+    super("");
+    this.errors = errors;
   }
 }
