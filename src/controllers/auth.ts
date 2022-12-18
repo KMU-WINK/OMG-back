@@ -34,7 +34,8 @@ const register = async (req: Request, res: Response, next: NextFunction) => {
     user.password = await bcrypt.hash(password, 10);
     user.phone = phone;
     await User.save(user);
-    return res.send("yay!");
+    let token = genToken(user);
+    return res.json({ token });
   } catch (err) {
     if (err instanceof QueryFailedError) {
       if (err.driverError?.code === "ER_DUP_ENTRY") {
