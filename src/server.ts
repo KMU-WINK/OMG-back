@@ -1,7 +1,7 @@
 import express, { NextFunction, Request, Response } from "express";
 import router from "./routes";
 import { AppDataSource } from "./data-source";
-import { HttpException } from "./utils/exception";
+import { HttpException, ValidationError } from "./utils/exception";
 
 AppDataSource.initialize().then(() => {
   const app = express();
@@ -19,6 +19,9 @@ AppDataSource.initialize().then(() => {
         return res.json(err.json);
       }
       return res.send(err.message);
+    }
+    if (err instanceof ValidationError) {
+      return res.status(400).send(err.errors[0].toString());
     }
     console.log(err);
     if (res.headersSent) {
