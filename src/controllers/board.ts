@@ -29,7 +29,47 @@ const write = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
+const remove = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    let board = await Board.findOne({
+      where: {
+        id: Number.parseInt(req.params.id),
+        user: { id: (await getUser(req)).id },
+      },
+    });
+    if (!board) {
+      return next(new HttpException(404, "Not Found"));
+    }
+    await Board.delete(board.id);
+    return res.status(200).send("");
+  } catch (err) {
+    return next(err);
+  }
+};
+
+const update = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    let id = Number.parseInt(req.params.id);
+    let { title, content } = req.body;
+    let board = await Board.findOne({
+      where: {
+        id,
+        user: { id: (await getUser(req)).id },
+      },
+    });
+    if (!board) {
+      return next(new HttpException(404, "Not Found"));
+    }
+    await Board.update(id, { title, content });
+    return res.status(200).send("");
+  } catch (err) {
+    return next(err);
+  }
+};
+
 export default {
   getList,
   write,
+  remove,
+  update,
 };
