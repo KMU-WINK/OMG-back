@@ -1,6 +1,5 @@
 import express from "express";
 import boardController from "../controllers/board";
-import validate from "../validator";
 
 const router = express.Router();
 

@@ -1,9 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import bcrypt from "bcrypt";
-import { User } from "../entity/User";
 import { HttpException } from "../utils/exception";
-import { QueryFailedError } from "typeorm";
-import { genToken, getUser } from "../utils/auth";
+import { getUser } from "../utils/auth";
 import { Board } from "../entity/Board";
 
 const getList = async (req: Request, res: Response, next: NextFunction) => {

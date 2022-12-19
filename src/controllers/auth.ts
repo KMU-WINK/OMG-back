@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 import { User } from "../entity/User";
 import { HttpException } from "../utils/exception";
 import { QueryFailedError } from "typeorm";
-import { genToken, verifyToken } from "../utils/auth";
+import { genToken } from "../utils/auth";
 
 const login = async (req: Request, res: Response, next: NextFunction) => {
   try {
