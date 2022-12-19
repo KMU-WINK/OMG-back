@@ -6,14 +6,17 @@ export class HttpException extends Error {
   public json?: { [key: string]: string };
   constructor(
     status: number = 500,
-    message: string = "알 수 없는 서버 오류가 발생했습니다.",
-    json?: { [key: string]: string }
+    message:
+      | string
+      | { [key: string]: string } = "알 수 없는 서버 오류가 발생했습니다."
   ) {
-    super(message);
+    super(typeof message === "string" ? message : "");
     this.name = "HttpException";
     this.status = status;
-    this.message = message;
-    this.json = json;
+    this.message = typeof message === "string" ? message : "";
+    if (typeof message !== "string") {
+      this.json = message;
+    }
   }
 }
 

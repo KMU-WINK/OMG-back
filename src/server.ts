@@ -21,7 +21,9 @@ AppDataSource.initialize().then(() => {
       return res.send(err.message);
     }
     if (err instanceof ValidationError) {
-      return res.status(400).send(err.errors[0].toString());
+      return res
+        .status(400)
+        .send({ code: "VALIDATION_ERROR", errors: err.errors });
     }
     console.log(err);
     if (res.headersSent) {

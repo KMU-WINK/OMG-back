@@ -14,12 +14,10 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
       },
     });
     if (!user || !(await bcrypt.compare(password, user.password))) {
-      return next(
-        new HttpException(401, "Authentication information is incorrect.")
-      );
+      return next(new HttpException(400, { code: "WRONG_EMAIL_OR_PASSWORD" }));
     }
-    let token = genToken(user);
-    return res.json({ token });
+    let token = `Bearer ${genToken(user)}`;
+    return res.status(200).json({ token });
   } catch (err) {
     return next(err);
   }
@@ -34,12 +32,14 @@ const register = async (req: Request, res: Response, next: NextFunction) => {
     user.password = await bcrypt.hash(password, 10);
     user.phone = phone;
     await User.save(user);
-    let token = genToken(user);
-    return res.json({ token });
+    let token = `Bearer ${genToken(user)}`;
+    return res.status(200).json({ token });
   } catch (err) {
     if (err instanceof QueryFailedError) {
       if (err.driverError?.code === "ER_DUP_ENTRY") {
-        return res.send("dup!");
+        return next(
+          new HttpException(400, { code: "EMAIL_ALREADY_REGISTERED" })
+        );
       }
     }
     return next(err);

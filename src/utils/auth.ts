@@ -75,7 +75,7 @@ const authMiddleware = async (
 ) => {
   let id = await verifyToken(req.headers.authorization?.split(" ")[1] ?? "");
   if (!id) {
-    return next(new HttpException(401, "Unauthorized"));
+    return next(new HttpException(401, { code: "UNAUTHORIZED" }));
   }
   return next();
 };
