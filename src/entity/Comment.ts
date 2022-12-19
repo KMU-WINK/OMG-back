@@ -18,10 +18,15 @@ export class Comment extends BaseEntity {
   @CreateDateColumn({ nullable: false })
   createdAt!: Date;
 
-  @ManyToOne((type) => User, { nullable: false })
+  @ManyToOne((type) => User, {
+    nullable: false,
+    eager: true,
+  })
   user!: User;
 
-  @ManyToOne((type) => Board, (board) => board.comments, { nullable: false })
+  @ManyToOne((type) => Board, (board) => board.comments, {
+    nullable: false,
+  })
   board!: Board;
 
   @Column("mediumtext", { nullable: false })

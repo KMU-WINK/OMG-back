@@ -6,6 +6,7 @@ import {
   ManyToOne,
   CreateDateColumn,
   OneToMany,
+  JoinColumn,
 } from "typeorm";
 import { BoardLike } from "./BoardLike";
 import { User } from "./User";
@@ -19,7 +20,10 @@ export class Board extends BaseEntity {
   @CreateDateColumn({ nullable: false })
   createdAt!: Date;
 
-  @ManyToOne((type) => User, { nullable: false })
+  @ManyToOne((type) => User, {
+    nullable: false,
+    eager: true,
+  })
   user!: User;
 
   @Column("varchar", { length: 100, nullable: false })
@@ -30,9 +34,13 @@ export class Board extends BaseEntity {
 
   @OneToMany((type) => BoardLike, (boardLike) => boardLike.board, {
     nullable: false,
+    eager: true,
   })
   likes!: BoardLike[];
 
-  @OneToMany((type) => Comment, (comment) => comment.board, { nullable: false })
+  @OneToMany((type) => Comment, (comment) => comment.board, {
+    nullable: false,
+    eager: true,
+  })
   comments!: Comment[];
 }

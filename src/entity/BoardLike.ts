@@ -18,9 +18,14 @@ export class BoardLike extends BaseEntity {
   @CreateDateColumn({ nullable: false })
   createdAt!: Date;
 
-  @ManyToOne((type) => User, { nullable: false })
+  @ManyToOne((type) => User, {
+    nullable: false,
+    eager: true,
+  })
   user!: User;
 
-  @ManyToOne((type) => Board, (board) => board.likes, { nullable: false })
+  @ManyToOne((type) => Board, (board) => board.likes, {
+    nullable: false,
+  })
   board!: Board;
 }
