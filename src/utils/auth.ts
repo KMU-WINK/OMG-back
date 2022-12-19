@@ -48,6 +48,26 @@ const verifyToken = async (
   }
 };
 
+const getUser = async (
+  req: Request,
+  requestDatabase: boolean = false
+): Promise<User> => {
+  let decode = jwt.verify(
+    req.headers.authorization?.split(" ")[1] ?? "",
+    config.AUTH.secretKey
+  ) as Token;
+  if (requestDatabase) {
+    let user = await User.findOne({ where: { id: decode.id } });
+    if (!user) {
+      throw new Error("User not found");
+    }
+    return user;
+  }
+  let user = new User();
+  user.id = decode.id;
+  return user;
+};
+
 const authMiddleware = async (
   req: Request,
   res: Response,
@@ -60,4 +80,4 @@ const authMiddleware = async (
   return next();
 };
 
-export { genToken, verifyToken, authMiddleware };
+export { genToken, verifyToken, authMiddleware, getUser };
