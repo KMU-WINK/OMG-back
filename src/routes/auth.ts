@@ -1,14 +1,18 @@
 import express from "express";
 import authController from "../controllers/auth";
-import validateMiddleware from "../validator";
+import { validateBodyMiddleware } from "../validator";
 import { LoginValidator, RegisterValidator } from "../validator/auth";
 
 const router = express.Router();
 
-router.post("/login", validateMiddleware(LoginValidator), authController.login);
+router.post(
+  "/login",
+  validateBodyMiddleware(LoginValidator),
+  authController.login
+);
 router.post(
   "/register",
-  validateMiddleware(RegisterValidator),
+  validateBodyMiddleware(RegisterValidator),
   authController.register
 );
 

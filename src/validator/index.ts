@@ -2,7 +2,7 @@ import { validate } from "class-validator";
 import { NextFunction, Request, Response } from "express";
 import { ValidationError } from "../utils/exception";
 
-const validateMiddleware =
+const validateBodyMiddleware =
   (obj: any) => async (req: Request, res: Response, next: NextFunction) => {
     let tmp = new obj();
     for (let key in req.body) {
@@ -15,4 +15,17 @@ const validateMiddleware =
     return next();
   };
 
-export default validateMiddleware;
+const validateParamMiddleware =
+  (obj: any) => async (req: Request, res: Response, next: NextFunction) => {
+    let tmp = new obj();
+    for (let key in req.params) {
+      tmp[key] = req.params[key];
+    }
+    let errors = await validate(tmp);
+    if (errors.length > 0) {
+      return next(new ValidationError(errors));
+    }
+    return next();
+  };
+
+export { validateBodyMiddleware, validateParamMiddleware };
