@@ -1,7 +1,9 @@
 import { Request, Response, NextFunction } from "express";
+import { QueryFailedError } from "typeorm";
 import { HttpException } from "../utils/exception";
 import { getUser } from "../utils/auth";
 import { Board } from "../entity/Board";
+import { BoardLike } from "../entity/BoardLike";
 
 const getList = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -80,10 +82,47 @@ const update = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
+const addLike = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    let id = Number.parseInt(req.params.id);
+
+    let board = new Board();
+    board.id = id;
+
+    let boardLike = new BoardLike();
+    boardLike.user = await getUser(req);
+    boardLike.board = board;
+    await BoardLike.insert(boardLike);
+
+    return res.status(201).send("");
+  } catch (err) {
+    if (err instanceof QueryFailedError) {
+      if (err.driverError?.code === "ER_DUP_ENTRY") {
+        return next(new HttpException(400, { code: "BOARD_ALREADY_LIKED" }));
+      }
+    }
+    return next(err);
+  }
+};
+const removeLike = async (req: Request, res: Response, next: NextFunction) => {
+  let id = Number.parseInt(req.params.id);
+
+  let result = await BoardLike.delete({
+    board: { id },
+    user: { id: (await getUser(req)).id },
+  });
+  if (!result.affected) {
+    return next(new HttpException(404, { code: "NOT_FOUND" }));
+  }
+  return res.status(204).send("");
+};
+
 export default {
   getList,
   read,
   write,
   remove,
   update,
+  addLike,
+  removeLike,
 };
