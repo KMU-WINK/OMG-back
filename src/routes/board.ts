@@ -29,4 +29,15 @@ router.put(
   boardController.update
 );
 
+router.post(
+  "/:id/like",
+  validateParamMiddleware(IdParamValidator),
+  boardController.addLike
+);
+router.delete(
+  "/:id/like",
+  validateParamMiddleware(IdParamValidator),
+  boardController.removeLike
+);
+
 export default router;
