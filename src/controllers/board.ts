@@ -107,16 +107,20 @@ const addLike = async (req: Request, res: Response, next: NextFunction) => {
 };
 
 const removeLike = async (req: Request, res: Response, next: NextFunction) => {
-  let id = Number.parseInt(req.params.id);
+  try {
+    let id = Number.parseInt(req.params.id);
 
-  let result = await BoardLike.delete({
-    board: { id },
-    user: { id: (await getUser(req)).id },
-  });
-  if (!result.affected) {
-    return next(new HttpException(404, { code: "NOT_FOUND" }));
+    let result = await BoardLike.delete({
+      board: { id },
+      user: { id: (await getUser(req)).id },
+    });
+    if (!result.affected) {
+      return next(new HttpException(404, { code: "NOT_FOUND" }));
+    }
+    return res.status(204).send("");
+  } catch (err) {
+    return next(err);
   }
-  return res.status(204).send("");
 };
 
 const addComment = async (req: Request, res: Response, next: NextFunction) => {
