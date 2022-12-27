@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import { User } from "../entity/User";
+import { UserInfo } from "../entity/UserInfo";
 import config from "./config";
 import { Request, Response, NextFunction } from "express";
 import { HttpException } from "./exception";
@@ -13,9 +14,12 @@ interface Token {
   token: string;
 }
 
-const genToken = (user: User) => {
+const genToken = (userInfo: UserInfo) => {
   return jwt.sign(
-    { id: user.id, token: sha256(config.AUTH.hashKey + user.password) },
+    {
+      id: userInfo.user.id,
+      token: sha256(config.AUTH.hashKey + userInfo.password),
+    },
     config.AUTH.secretKey,
     {
       expiresIn: "30d",
@@ -30,14 +34,14 @@ const verifyToken = async (
   try {
     let decode = jwt.verify(token, config.AUTH.secretKey) as Token;
     if (verifyWithDatabase) {
-      let user = await User.findOne({
+      let userInfo = await UserInfo.findOne({
         where: {
-          id: decode.id,
+          user: { id: decode.id },
         },
       });
       if (
-        !user ||
-        decode.token !== sha256(config.AUTH.hashKey + user.password)
+        !userInfo ||
+        decode.token !== sha256(config.AUTH.hashKey + userInfo.password)
       ) {
         return false;
       }

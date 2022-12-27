@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import bcrypt from "bcrypt";
 import { User } from "../entity/User";
+import { UserInfo } from "../entity/UserInfo";
 import { HttpException } from "../utils/exception";
 import { QueryFailedError } from "typeorm";
 import { genToken } from "../utils/auth";
@@ -8,7 +9,7 @@ import { genToken } from "../utils/auth";
 const login = async (req: Request, res: Response, next: NextFunction) => {
   try {
     let { email, password } = req.body;
-    let user = await User.findOne({
+    let user = await UserInfo.findOne({
       where: {
         email,
       },
@@ -26,13 +27,21 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
 const register = async (req: Request, res: Response, next: NextFunction) => {
   try {
     let { email, name, password, phone } = req.body;
+
     let user = new User();
-    user.email = email;
     user.name = name;
-    user.password = await bcrypt.hash(password, 10);
-    user.phone = phone;
-    await User.save(user);
-    let token = `Bearer ${genToken(user)}`;
+    user = await User.save(user);
+
+    console.log(user);
+
+    let userInfo = new UserInfo();
+    userInfo.user = user;
+    userInfo.email = email;
+    userInfo.password = await bcrypt.hash(password, 10);
+    userInfo.phone = phone;
+    await UserInfo.save(userInfo);
+
+    let token = `Bearer ${genToken(userInfo)}`;
     return res.status(200).json({ token });
   } catch (err) {
     if (err instanceof QueryFailedError) {
