@@ -2,6 +2,7 @@ import express from "express";
 import boardController from "../controllers/board";
 import { validateBodyMiddleware, validateParamMiddleware } from "../validator";
 import {
+  CommentValidator,
   IdParamValidator,
   UpdateValidator,
   WriteValidator,
@@ -38,6 +39,18 @@ router.delete(
   "/:id/like",
   validateParamMiddleware(IdParamValidator),
   boardController.removeLike
+);
+
+router.post(
+  "/:id/comment",
+  validateBodyMiddleware(CommentValidator),
+  validateParamMiddleware(IdParamValidator),
+  boardController.addComment
+);
+router.delete(
+  "/:_/comment/:id",
+  validateParamMiddleware(IdParamValidator),
+  boardController.removeComment
 );
 
 export default router;

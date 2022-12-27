@@ -16,6 +16,11 @@ export class UpdateValidator {
   content!: string;
 }
 
+export class CommentValidator {
+  @Length(1)
+  content!: string;
+}
+
 export class IdParamValidator {
   @Length(1, 10)
   @IsNumberString({ no_symbols: true })
