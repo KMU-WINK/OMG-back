@@ -6,7 +6,6 @@ import {
   ManyToOne,
   CreateDateColumn,
   OneToMany,
-  JoinColumn,
 } from "typeorm";
 import { BoardLike } from "./BoardLike";
 import { User } from "./User";

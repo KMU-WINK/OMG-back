@@ -5,7 +5,6 @@ import {
   Column,
   ManyToOne,
   CreateDateColumn,
-  OneToMany,
 } from "typeorm";
 import { Board } from "./Board";
 import { User } from "./User";
