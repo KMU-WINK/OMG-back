@@ -4,6 +4,7 @@ import { HttpException } from "../utils/exception";
 import { getUser } from "../utils/auth";
 import { Board } from "../entity/Board";
 import { BoardLike } from "../entity/BoardLike";
+import { Comment } from "../entity/Comment";
 
 const getList = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -104,6 +105,7 @@ const addLike = async (req: Request, res: Response, next: NextFunction) => {
     return next(err);
   }
 };
+
 const removeLike = async (req: Request, res: Response, next: NextFunction) => {
   let id = Number.parseInt(req.params.id);
 
@@ -117,6 +119,44 @@ const removeLike = async (req: Request, res: Response, next: NextFunction) => {
   return res.status(204).send("");
 };
 
+const addComment = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    let id = Number.parseInt(req.params.id);
+    let { content } = req.body;
+
+    let board = new Board();
+    board.id = id;
+
+    let comment = new Comment();
+    comment.board = board;
+    comment.user = await getUser(req);
+    comment.content = content;
+
+    await Comment.insert(comment);
+    return res.status(204).send("");
+  } catch (err) {
+    return next(err);
+  }
+};
+
+const removeComment = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    let id = Number.parseInt(req.params.id);
+
+    let result = await Comment.delete(id);
+    if (!result.affected) {
+      return next(new HttpException(404, { code: "NOT_FOUND" }));
+    }
+    return res.status(201).send("");
+  } catch (err) {
+    return next(err);
+  }
+};
+
 export default {
   getList,
   read,
@@ -125,4 +165,6 @@ export default {
   update,
   addLike,
   removeLike,
+  addComment,
+  removeComment,
 };
