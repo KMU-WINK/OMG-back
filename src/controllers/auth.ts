@@ -32,8 +32,6 @@ const register = async (req: Request, res: Response, next: NextFunction) => {
     user.name = name;
     user = await User.save(user);
 
-    console.log(user);
-
     let userInfo = new UserInfo();
     userInfo.user = user;
     userInfo.email = email;
