@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import bcrypt from "bcrypt";
+import crypto from "crypto";
 import { User } from "../entity/User";
 import { UserInfo } from "../entity/UserInfo";
 import { HttpException } from "../utils/exception";
@@ -96,7 +97,7 @@ const forgotPasswordRequest = async (
   if (!userInfo) {
     return next(new HttpException(400, { code: "NOT_FOUND" }));
   }
-  let code = "123456";
+  let code = [...crypto.randomBytes(6)].join("").slice(0, 6);
   await sendSms(phone, `[OMG] 비밀번호 변경 인증코드는 ${code} 입니다.`);
 
   let now = +new Date();
