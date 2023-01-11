@@ -5,9 +5,7 @@ import { UserInfo } from "../entity/UserInfo";
 import config from "./config";
 import { Request, Response, NextFunction } from "express";
 import { HttpException } from "./exception";
-
-const sha256 = (content: string) =>
-  crypto.createHash("sha256").update(content).digest("hex");
+import { sha256 } from "./hash";
 
 interface Token {
   id: number;

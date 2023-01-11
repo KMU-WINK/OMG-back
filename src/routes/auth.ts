@@ -16,4 +16,9 @@ router.post(
   authController.register
 );
 
+router.post("/forgot/email", authController.forgotEmailRequest);
+
+router.post("/forgot/password", authController.forgotPasswordRequest);
+router.put("/forgot/password", authController.changePassword);
+
 export default router;
