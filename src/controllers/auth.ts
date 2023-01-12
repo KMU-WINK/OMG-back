@@ -11,21 +11,17 @@ import { sha256 } from "../utils/hash";
 import config from "../utils/config";
 
 const login = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    let { email, password } = req.body;
-    let user = await UserInfo.findOne({
-      where: {
-        email,
-      },
-    });
-    if (!user || !(await bcrypt.compare(password, user.password))) {
-      return next(new HttpException(400, { code: "WRONG_EMAIL_OR_PASSWORD" }));
-    }
-    let token = `Bearer ${genToken(user)}`;
-    return res.status(200).json({ token });
-  } catch (err) {
-    return next(err);
+  let { email, password } = req.body;
+  let user = await UserInfo.findOne({
+    where: {
+      email,
+    },
+  });
+  if (!user || !(await bcrypt.compare(password, user.password))) {
+    return next(new HttpException(400, { code: "WRONG_EMAIL_OR_PASSWORD" }));
   }
+  let token = `Bearer ${genToken(user)}`;
+  return res.status(200).json({ token });
 };
 
 const register = async (req: Request, res: Response, next: NextFunction) => {

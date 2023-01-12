@@ -7,80 +7,60 @@ import { BoardLike } from "../entity/BoardLike";
 import { Comment } from "../entity/Comment";
 
 const getList = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    let lists = await Board.find();
-    return res.status(200).json(lists);
-  } catch (err) {
-    return next(err);
-  }
+  let lists = await Board.find();
+  return res.status(200).json(lists);
 };
 
 const read = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    let board = await Board.findOne({
-      where: {
-        id: Number.parseInt(req.params.id),
-      },
-    });
-    if (!board) {
-      return next(new HttpException(404, { code: "NOT_FOUND" }));
-    }
-    return res.status(200).json(board);
-  } catch (err) {
-    return next(err);
+  let board = await Board.findOne({
+    where: {
+      id: Number.parseInt(req.params.id),
+    },
+  });
+  if (!board) {
+    return next(new HttpException(404, { code: "NOT_FOUND" }));
   }
+  return res.status(200).json(board);
 };
 
 const write = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    let { title, content } = req.body;
-    let board = new Board();
-    board.user = await getUser(req);
-    board.title = title;
-    board.content = content;
-    await Board.insert(board);
-    return res.status(201).send("");
-  } catch (err) {
-    return next(err);
-  }
+  let { title, content } = req.body;
+  let board = new Board();
+  board.user = await getUser(req);
+  board.title = title;
+  board.content = content;
+  await Board.insert(board);
+  return res.status(201).send("");
 };
 
 const remove = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    let board = await Board.findOne({
-      where: {
-        id: Number.parseInt(req.params.id),
-        user: { id: (await getUser(req)).id },
-      },
-    });
-    if (!board) {
-      return next(new HttpException(404, { code: "NOT_FOUND" }));
-    }
-    await Board.delete(board.id);
-    return res.status(204).send("");
-  } catch (err) {
-    return next(err);
+  let board = await Board.findOne({
+    where: {
+      id: Number.parseInt(req.params.id),
+      user: { id: (await getUser(req)).id },
+    },
+  });
+  if (!board) {
+    return next(new HttpException(404, { code: "NOT_FOUND" }));
   }
+  await Board.delete(board.id);
+  return res.status(204).send("");
 };
 
 const update = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    let id = Number.parseInt(req.params.id);
-    let { title, content } = req.body;
-    let board = await Board.findOne({
-      where: {
-        id,
-        user: { id: (await getUser(req)).id },
-      },
-    });
-    if (!board) {
-      return next(new HttpException(404, { code: "NOT_FOUND" }));
-    }
-    await Board.update(id, { title, content });
-    return res.status(204).send("");
-  } catch (err) {
-    return next(err);
+  let id = Number.parseInt(req.params.id);
+  let { title, content } = req.body;
+  let board = await Board.findOne({
+    where: {
+      id,
+      user: { id: (await getUser(req)).id },
+    },
+  });
+  if (!board) {
+    return next(new HttpException(404, { code: "NOT_FOUND" }));
   }
+  await Board.update(id, { title, content });
+  return res.status(204).send("");
 };
 
 const addLike = async (req: Request, res: Response, next: NextFunction) => {
@@ -107,40 +87,32 @@ const addLike = async (req: Request, res: Response, next: NextFunction) => {
 };
 
 const removeLike = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    let id = Number.parseInt(req.params.id);
+  let id = Number.parseInt(req.params.id);
 
-    let result = await BoardLike.delete({
-      board: { id },
-      user: { id: (await getUser(req)).id },
-    });
-    if (!result.affected) {
-      return next(new HttpException(404, { code: "NOT_FOUND" }));
-    }
-    return res.status(204).send("");
-  } catch (err) {
-    return next(err);
+  let result = await BoardLike.delete({
+    board: { id },
+    user: { id: (await getUser(req)).id },
+  });
+  if (!result.affected) {
+    return next(new HttpException(404, { code: "NOT_FOUND" }));
   }
+  return res.status(204).send("");
 };
 
 const addComment = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    let id = Number.parseInt(req.params.id);
-    let { content } = req.body;
+  let id = Number.parseInt(req.params.id);
+  let { content } = req.body;
 
-    let board = new Board();
-    board.id = id;
+  let board = new Board();
+  board.id = id;
 
-    let comment = new Comment();
-    comment.board = board;
-    comment.user = await getUser(req);
-    comment.content = content;
+  let comment = new Comment();
+  comment.board = board;
+  comment.user = await getUser(req);
+  comment.content = content;
 
-    await Comment.insert(comment);
-    return res.status(204).send("");
-  } catch (err) {
-    return next(err);
-  }
+  await Comment.insert(comment);
+  return res.status(204).send("");
 };
 
 const removeComment = async (
@@ -148,17 +120,13 @@ const removeComment = async (
   res: Response,
   next: NextFunction
 ) => {
-  try {
-    let id = Number.parseInt(req.params.id);
+  let id = Number.parseInt(req.params.id);
 
-    let result = await Comment.delete(id);
-    if (!result.affected) {
-      return next(new HttpException(404, { code: "NOT_FOUND" }));
-    }
-    return res.status(201).send("");
-  } catch (err) {
-    return next(err);
+  let result = await Comment.delete(id);
+  if (!result.affected) {
+    return next(new HttpException(404, { code: "NOT_FOUND" }));
   }
+  return res.status(201).send("");
 };
 
 export default {
