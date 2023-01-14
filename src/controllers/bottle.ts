@@ -4,6 +4,7 @@ import { Bottle } from "../entity/Bottle";
 import { BottleLike } from "../entity/BottleLike";
 import { getUser } from "../utils/auth";
 import { HttpException } from "../utils/exception";
+import config from "../utils/config";
 
 const getList = async (req: Request, res: Response, next: NextFunction) => {
   let list = await Bottle.find();
@@ -38,6 +39,10 @@ const createBottle = async (
   bottle.address = address;
   bottle.lat = lat;
   bottle.lng = lng;
+  bottle.money =
+    sojuNum * config.PRICE.SOJU +
+    beerNum * config.PRICE.BEER +
+    extraNum * config.PRICE.EXTRA;
 
   await Bottle.insert(bottle);
   return res.status(201).send("");

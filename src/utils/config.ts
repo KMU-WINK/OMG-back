@@ -18,4 +18,9 @@ export default {
     accessKey: "TrhItKOt6CG1aOVRbgg6",
     secretKey: process.env["NCLOUD_SECRET"] ?? "",
   },
+  PRICE: {
+    SOJU: 1,
+    BEER: 100,
+    EXTRA: 10000,
+  },
 };
