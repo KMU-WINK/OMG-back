@@ -36,6 +36,9 @@ export class Bottle extends BaseEntity {
   @Column("varchar", { length: 100, nullable: false })
   title!: string;
 
+  @Column("text", { nullable: false })
+  img!: string;
+
   @Column("int", { nullable: false })
   sojuNum!: number;
 
