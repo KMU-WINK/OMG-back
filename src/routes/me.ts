@@ -1,7 +1,10 @@
 import express from "express";
 import meController from "../controllers/me";
 import { validateBodyMiddleware } from "../validator";
-import { UpdatePointLimitValidator } from "../validator/me";
+import {
+  ChangePasswordValidator,
+  UpdatePointLimitValidator,
+} from "../validator/me";
 
 const router = express.Router();
 
@@ -11,6 +14,10 @@ router.put(
   validateBodyMiddleware(UpdatePointLimitValidator),
   meController.updatePointLimit
 );
-router.put("/password", meController.changePassword);
+router.put(
+  "/password",
+  validateBodyMiddleware(ChangePasswordValidator),
+  meController.changePassword
+);
 
 export default router;
