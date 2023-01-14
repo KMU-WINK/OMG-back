@@ -34,5 +34,5 @@ AppDataSource.initialize().then(() => {
     return res.status(500).send("");
   });
 
-  app.listen(8080, () => console.log("listening!"));
+  app.listen(80, () => console.log("listening!"));
 });
