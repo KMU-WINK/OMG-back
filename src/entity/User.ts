@@ -22,4 +22,10 @@ export class User extends BaseEntity {
 
   @Column("int", { nullable: false, default: 1000 })
   pointLimit!: number;
+
+  @Column("int", { nullable: false, default: 0 })
+  bottleSell!: number;
+
+  @Column("int", { nullable: false, default: 0 })
+  bottleBuy!: number;
 }

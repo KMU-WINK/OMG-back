@@ -86,6 +86,11 @@ const createBottle = async (
     extraNum * config.PRICE.EXTRA;
 
   await Bottle.insert(bottle);
+
+  await User.update((await getUser(req)).id, {
+    bottleSell: () => "bottleSell + 1",
+  });
+
   return res.status(201).send("");
 };
 
@@ -254,6 +259,7 @@ const completeBottle = async (
 
   await User.update(id, {
     point: () => `point + ${point}`,
+    bottleBuy: () => "bottleBuy + 1",
   });
 
   return res.status(201).send("");
