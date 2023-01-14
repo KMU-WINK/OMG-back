@@ -144,8 +144,9 @@ const reserveCancelBottle = async (
   let result = await Bottle.createQueryBuilder()
     .update()
     .set({ reserved: () => "NULL", reservedDate: () => "NULL" })
-    .where("id = :id AND reserved = :reserved", {
+    .where("id = :id AND complete = :complete AND reserved = :reserved", {
       id,
+      complete: false,
       reserved: (await getUser(req)).id,
     })
     .updateEntity(true)
@@ -156,6 +157,27 @@ const reserveCancelBottle = async (
   return res.status(204).send("");
 };
 
+const completeBottle = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  let id = Number.parseInt(req.params.id);
+  let result = await Bottle.createQueryBuilder()
+    .update()
+    .set({ complete: true })
+    .where("id = :id AND complete = :complete AND reserved = :reserved", {
+      id,
+      complete: false,
+      reserved: (await getUser(req)).id,
+    })
+    .updateEntity(true)
+    .execute();
+  if (!result.affected) {
+    return next(new HttpException(404, { code: "NOT_FOUND" }));
+  }
+  return res.status(201).send("");
+};
 export default {
   getList,
   getBottle,
@@ -166,4 +188,5 @@ export default {
   addClick,
   reserveBottle,
   reserveCancelBottle,
+  completeBottle,
 };

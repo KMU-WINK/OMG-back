@@ -30,6 +30,9 @@ export class Bottle extends BaseEntity {
   })
   reserved!: User;
 
+  @Column("bool", { nullable: false, default: false })
+  complete!: boolean;
+
   @Column("datetime", { nullable: true })
   reservedDate!: Date;
 
