@@ -23,4 +23,9 @@ export default {
     BEER: 100,
     EXTRA: 10000,
   },
+  POINT: {
+    SOJU: 1,
+    BEER: 100,
+    EXTRA: 10000,
+  },
 };

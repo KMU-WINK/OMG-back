@@ -225,6 +225,14 @@ const completeBottle = async (
   next: NextFunction
 ) => {
   let id = Number.parseInt(req.params.id);
+
+  let bottle = await Bottle.findOne({
+    where: { id },
+  });
+  if (!bottle) {
+    return next(new HttpException(404, { code: "NOT_FOUND" }));
+  }
+
   let result = await Bottle.createQueryBuilder()
     .update()
     .set({ complete: true })
@@ -238,6 +246,16 @@ const completeBottle = async (
   if (!result.affected) {
     return next(new HttpException(404, { code: "NOT_FOUND" }));
   }
+
+  let point =
+    config.POINT.SOJU * bottle.sojuNum +
+    config.POINT.BEER * bottle.beerNum +
+    config.POINT.EXTRA * bottle.extraNum;
+
+  await User.update(id, {
+    point: () => `point + ${point}`,
+  });
+
   return res.status(201).send("");
 };
 export default {
