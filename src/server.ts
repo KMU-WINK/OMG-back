@@ -1,4 +1,5 @@
 import express, { NextFunction, Request, Response } from "express";
+import cors from "cors";
 import router from "./routes";
 import { AppDataSource } from "./data-source";
 import { HttpException, ValidationError } from "./utils/exception";
@@ -6,6 +7,7 @@ import { HttpException, ValidationError } from "./utils/exception";
 AppDataSource.initialize().then(() => {
   const app = express();
 
+  app.use(cors());
   app.use(
     express.json({
       limit: "100mb",
