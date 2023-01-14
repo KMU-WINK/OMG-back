@@ -68,7 +68,17 @@ const createBottle = async (
   res: Response,
   next: NextFunction
 ) => {
-  let { title, img, sojuNum, beerNum, extraNum, address, lat, lng } = req.body;
+  let {
+    title,
+    img,
+    sojuNum,
+    beerNum,
+    extraNum,
+    address,
+    lat,
+    lng,
+    entrancePassword,
+  } = req.body;
 
   let bottle = new Bottle();
   bottle.user = await getUser(req);
@@ -84,6 +94,9 @@ const createBottle = async (
     sojuNum * config.PRICE.SOJU +
     beerNum * config.PRICE.BEER +
     extraNum * config.PRICE.EXTRA;
+  if (entrancePassword) {
+    bottle.entrancePassword = entrancePassword;
+  }
 
   await Bottle.insert(bottle);
 

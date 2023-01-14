@@ -71,4 +71,7 @@ export class Bottle extends BaseEntity {
 
   @Column("double", { nullable: false }) // floating point errors may occur.
   lng!: number;
+
+  @Column("text", { nullable: true })
+  entrancePassword!: string;
 }

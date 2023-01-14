@@ -3,6 +3,8 @@ import {
   Length,
   IsNumber,
   IsDateString,
+  IsOptional,
+  IsString,
 } from "class-validator";
 
 export class CreateBottleValidator {
@@ -29,6 +31,10 @@ export class CreateBottleValidator {
 
   @IsNumber({ allowInfinity: false, allowNaN: false })
   lng!: number;
+
+  @IsOptional()
+  @IsString()
+  entrancePassword?: string;
 }
 
 export class ReserveBottleValidator {
