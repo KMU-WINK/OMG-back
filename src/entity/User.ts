@@ -16,4 +16,10 @@ export class User extends BaseEntity {
 
   @Column("varchar", { length: 10, nullable: false })
   name!: string;
+
+  @Column("int", { nullable: false, default: 1000 })
+  point!: number;
+
+  @Column("int", { nullable: false, default: 1000 })
+  pointLimit!: number;
 }
