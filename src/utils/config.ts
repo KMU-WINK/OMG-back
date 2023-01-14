@@ -19,13 +19,13 @@ export default {
     secretKey: process.env["NCLOUD_SECRET"] ?? "",
   },
   PRICE: {
-    SOJU: 1,
-    BEER: 100,
-    EXTRA: 10000,
+    SOJU: 100,
+    BEER: 130,
+    EXTRA: 70,
   },
   POINT: {
-    SOJU: 1,
-    BEER: 100,
-    EXTRA: 10000,
+    SOJU: 100,
+    BEER: 130,
+    EXTRA: 70,
   },
 };
