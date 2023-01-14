@@ -28,4 +28,7 @@ export class User extends BaseEntity {
 
   @Column("int", { nullable: false, default: 0 })
   bottleBuy!: number;
+
+  @Column("longtext", { nullable: true })
+  img?: string;
 }

@@ -82,8 +82,28 @@ const changePassword = async (
   return res.status(204).send("");
 };
 
+const updateImage = async (req: Request, res: Response, next: NextFunction) => {
+  let { img } = req.body;
+  await User.update((await getUser(req)).id, {
+    img,
+  });
+  return res.status(204).send("");
+};
+
+const removeImage = async (req: Request, res: Response, next: NextFunction) => {
+  await User.createQueryBuilder()
+    .update()
+    .set({ img: () => "NULL" })
+    .where("id = :id", { id: (await getUser(req)).id })
+    .updateEntity(true)
+    .execute();
+  return res.status(204).send("");
+};
+
 export default {
   getInfo,
   updatePointLimit,
   changePassword,
+  updateImage,
+  removeImage,
 };

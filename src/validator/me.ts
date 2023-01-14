@@ -12,3 +12,8 @@ export class ChangePasswordValidator {
   @Length(8, 60)
   newPassword!: string;
 }
+
+export class UpdateImageValidator {
+  @Length(1)
+  img!: string;
+}

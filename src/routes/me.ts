@@ -3,6 +3,7 @@ import meController from "../controllers/me";
 import { validateBodyMiddleware } from "../validator";
 import {
   ChangePasswordValidator,
+  UpdateImageValidator,
   UpdatePointLimitValidator,
 } from "../validator/me";
 
@@ -19,5 +20,11 @@ router.put(
   validateBodyMiddleware(ChangePasswordValidator),
   meController.changePassword
 );
+router.put(
+  "/image",
+  validateBodyMiddleware(UpdateImageValidator),
+  meController.updateImage
+);
+router.delete("/image", meController.removeImage);
 
 export default router;
