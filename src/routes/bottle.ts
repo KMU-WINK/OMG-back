@@ -56,4 +56,10 @@ router.delete(
   bottleController.reserveCancelBottle
 );
 
+router.post(
+  "/:id/complete",
+  validateParamMiddleware(IdParamValidator),
+  bottleController.completeBottle
+);
+
 export default router;
