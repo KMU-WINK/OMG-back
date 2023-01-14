@@ -29,8 +29,22 @@ const getInfo = async (req: Request, res: Response, next: NextFunction) => {
       complete: true,
     },
   });
+  let likedBottle = await Bottle.find({
+    where: {
+      user: { id: (await getUser(req)).id },
+      likes: {
+        user: { id: (await getUser(req)).id },
+      },
+    },
+  });
 
-  return res.json({ user, myBottle, reservedBottle, completeBottle });
+  return res.json({
+    user,
+    myBottle,
+    reservedBottle,
+    completeBottle,
+    likedBottle,
+  });
 };
 
 const updatePointLimit = async (
