@@ -31,6 +31,7 @@ const createBottle = async (
   let { title, img, sojuNum, beerNum, extraNum, address, lat, lng } = req.body;
 
   let bottle = new Bottle();
+  bottle.user = await getUser(req);
   bottle.title = title;
   bottle.img = img;
   bottle.sojuNum = sojuNum;
@@ -108,7 +109,7 @@ const addClick = async (req: Request, res: Response, next: NextFunction) => {
     clicks: () => "clicks + 1",
   });
 
-  return res.status(204).send("");
+  return res.status(201).send("");
 };
 
 export default {
