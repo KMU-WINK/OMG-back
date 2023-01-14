@@ -25,6 +25,7 @@ export class Comment extends BaseEntity {
 
   @ManyToOne((type) => Board, (board) => board.comments, {
     nullable: false,
+    onDelete: "CASCADE",
   })
   board!: Board;
 

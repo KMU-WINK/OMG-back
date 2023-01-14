@@ -26,6 +26,7 @@ export class BottleLike extends BaseEntity {
 
   @ManyToOne((type) => Bottle, (bottle) => bottle.likes, {
     nullable: false,
+    onDelete: "CASCADE",
   })
   bottle!: Bottle;
 }

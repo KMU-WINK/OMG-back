@@ -26,6 +26,7 @@ export class BoardLike extends BaseEntity {
 
   @ManyToOne((type) => Board, (board) => board.likes, {
     nullable: false,
+    onDelete: "CASCADE",
   })
   board!: Board;
 }
