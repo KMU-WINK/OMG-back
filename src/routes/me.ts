@@ -11,5 +11,6 @@ router.put(
   validateBodyMiddleware(UpdatePointLimitValidator),
   meController.updatePointLimit
 );
+router.put("/password", meController.changePassword);
 
 export default router;
