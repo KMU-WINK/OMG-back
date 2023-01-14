@@ -7,7 +7,11 @@ import { BoardLike } from "../entity/BoardLike";
 import { Comment } from "../entity/Comment";
 
 const getList = async (req: Request, res: Response, next: NextFunction) => {
-  let lists = await Board.find();
+  let lists = await Board.find({
+    order: {
+      id: "DESC",
+    },
+  });
   return res.status(200).json(lists);
 };
 
