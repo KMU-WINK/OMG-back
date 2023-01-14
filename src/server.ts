@@ -8,7 +8,7 @@ AppDataSource.initialize().then(() => {
 
   app.use(
     express.json({
-      limit: "5mb",
+      limit: "100mb",
     })
   );
   app.use("/api", router);

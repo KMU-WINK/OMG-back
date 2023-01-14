@@ -36,7 +36,7 @@ export class Bottle extends BaseEntity {
   @Column("varchar", { length: 100, nullable: false })
   title!: string;
 
-  @Column("text", { nullable: false })
+  @Column("longtext", { nullable: false })
   img!: string;
 
   @Column("int", { nullable: false })
