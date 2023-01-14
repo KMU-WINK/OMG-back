@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { Bottle } from "../entity/Bottle";
+import { User } from "../entity/User";
 import { UserInfo } from "../entity/UserInfo";
 import { getUser } from "../utils/auth";
 
@@ -30,6 +31,19 @@ const getInfo = async (req: Request, res: Response, next: NextFunction) => {
   return res.json({ user, myBottle, reservedBottle, completeBottle });
 };
 
+const updatePointLimit = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  let { pointLimit } = req.body;
+  await User.update((await getUser(req)).id, {
+    pointLimit: pointLimit,
+  });
+  return res.status(204).send("");
+};
+
 export default {
   getInfo,
+  updatePointLimit,
 };

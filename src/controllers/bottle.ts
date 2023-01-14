@@ -1,30 +1,66 @@
 import { Request, Response, NextFunction } from "express";
-import { QueryFailedError, IsNull } from "typeorm";
+import {
+  QueryFailedError,
+  IsNull,
+  MoreThanOrEqual,
+  LessThanOrEqual,
+} from "typeorm";
 import { Bottle } from "../entity/Bottle";
 import { BottleLike } from "../entity/BottleLike";
 import { getUser } from "../utils/auth";
 import { HttpException } from "../utils/exception";
 import config from "../utils/config";
+import { User } from "../entity/User";
 
 const getList = async (req: Request, res: Response, next: NextFunction) => {
-  let list = await Bottle.find({
-    where: {
-      reserved: IsNull(),
-    },
-  });
-  return res.status(200).json(list);
+  try {
+    let user = await User.findOne({
+      where: { id: (await getUser(req)).id },
+    });
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    let list = await Bottle.find({
+      where: {
+        reserved: IsNull(),
+        user: {
+          point: MoreThanOrEqual(user.pointLimit),
+          pointLimit: LessThanOrEqual(user.point),
+        },
+      },
+    });
+    return res.status(200).json(list);
+  } catch (err) {
+    return next(err);
+  }
 };
 
 const getBottle = async (req: Request, res: Response, next: NextFunction) => {
-  let bottle = await Bottle.findOne({
-    where: {
-      id: Number.parseInt(req.params.id),
-    },
-  });
-  if (!bottle) {
-    return next(new HttpException(404, { code: "NOT_FOUND" }));
+  try {
+    let user = await User.findOne({
+      where: { id: (await getUser(req)).id },
+    });
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    let bottle = await Bottle.findOne({
+      where: {
+        id: Number.parseInt(req.params.id),
+        user: {
+          point: MoreThanOrEqual(user.pointLimit),
+          pointLimit: LessThanOrEqual(user.point),
+        },
+      },
+    });
+    if (!bottle) {
+      return next(new HttpException(404, { code: "NOT_FOUND" }));
+    }
+    return res.status(200).json(bottle);
+  } catch (err) {
+    return next(err);
   }
-  return res.status(200).json(bottle);
 };
 
 const createBottle = async (
@@ -121,18 +157,44 @@ const reserveBottle = async (
   res: Response,
   next: NextFunction
 ) => {
-  let date = new Date(req.body.date);
-  let id = Number.parseInt(req.params.id);
-  let result = await Bottle.createQueryBuilder()
-    .update()
-    .set({ reserved: await getUser(req), reservedDate: date })
-    .where("id = :id AND reserved IS NULL", { id })
-    .updateEntity(true)
-    .execute();
-  if (!result.affected) {
-    return next(new HttpException(404, { code: "NOT_FOUND" }));
+  try {
+    let date = new Date(req.body.date);
+    let id = Number.parseInt(req.params.id);
+
+    let user = await User.findOne({
+      where: { id: (await getUser(req)).id },
+    });
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    // validate point limit
+    let bottle = await Bottle.findOne({
+      where: {
+        id: Number.parseInt(req.params.id),
+        user: {
+          point: MoreThanOrEqual(user.pointLimit),
+          pointLimit: LessThanOrEqual(user.point),
+        },
+      },
+    });
+    if (!bottle) {
+      return next(new HttpException(404, { code: "NOT_FOUND" }));
+    }
+
+    let result = await Bottle.createQueryBuilder()
+      .update()
+      .set({ reserved: await getUser(req), reservedDate: date })
+      .where("id = :id AND reserved IS NULL", { id })
+      .updateEntity(true)
+      .execute();
+    if (!result.affected) {
+      return next(new HttpException(404, { code: "NOT_FOUND" }));
+    }
+    return res.status(201).send("");
+  } catch (err) {
+    return next(err);
   }
-  return res.status(201).send("");
 };
 
 const reserveCancelBottle = async (
