@@ -1,7 +1,11 @@
 import express from "express";
 import bottleController from "../controllers/bottle";
 import { validateBodyMiddleware, validateParamMiddleware } from "../validator";
-import { CreateBottleValidator, IdParamValidator } from "../validator/bottle";
+import {
+  CreateBottleValidator,
+  IdParamValidator,
+  ReserveBottleValidator,
+} from "../validator/bottle";
 
 const router = express.Router();
 
@@ -38,6 +42,18 @@ router.post(
   "/:id/click",
   validateParamMiddleware(IdParamValidator),
   bottleController.addClick
+);
+
+router.post(
+  "/:id/reserve",
+  validateBodyMiddleware(ReserveBottleValidator),
+  validateParamMiddleware(IdParamValidator),
+  bottleController.reserveBottle
+);
+router.delete(
+  "/:id/reserve",
+  validateParamMiddleware(IdParamValidator),
+  bottleController.reserveCancelBottle
 );
 
 export default router;

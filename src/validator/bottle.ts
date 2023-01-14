@@ -1,4 +1,9 @@
-import { IsNumberString, Length, IsNumber } from "class-validator";
+import {
+  IsNumberString,
+  Length,
+  IsNumber,
+  IsDateString,
+} from "class-validator";
 
 export class CreateBottleValidator {
   @Length(1, 100)
@@ -24,6 +29,11 @@ export class CreateBottleValidator {
 
   @IsNumber({ allowInfinity: false, allowNaN: false })
   lng!: number;
+}
+
+export class ReserveBottleValidator {
+  @IsDateString()
+  date!: string;
 }
 
 export class IdParamValidator {

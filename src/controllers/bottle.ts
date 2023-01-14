@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { QueryFailedError } from "typeorm";
+import { QueryFailedError, IsNull } from "typeorm";
 import { Bottle } from "../entity/Bottle";
 import { BottleLike } from "../entity/BottleLike";
 import { getUser } from "../utils/auth";
@@ -7,7 +7,11 @@ import { HttpException } from "../utils/exception";
 import config from "../utils/config";
 
 const getList = async (req: Request, res: Response, next: NextFunction) => {
-  let list = await Bottle.find();
+  let list = await Bottle.find({
+    where: {
+      reserved: IsNull(),
+    },
+  });
   return res.status(200).json(list);
 };
 
@@ -112,6 +116,46 @@ const addClick = async (req: Request, res: Response, next: NextFunction) => {
   return res.status(201).send("");
 };
 
+const reserveBottle = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  let date = new Date(req.body.date);
+  let id = Number.parseInt(req.params.id);
+  let result = await Bottle.createQueryBuilder()
+    .update()
+    .set({ reserved: await getUser(req), reservedDate: date })
+    .where("id = :id AND reserved IS NULL", { id })
+    .updateEntity(true)
+    .execute();
+  if (!result.affected) {
+    return next(new HttpException(404, { code: "NOT_FOUND" }));
+  }
+  return res.status(201).send("");
+};
+
+const reserveCancelBottle = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  let id = Number.parseInt(req.params.id);
+  let result = await Bottle.createQueryBuilder()
+    .update()
+    .set({ reserved: () => "NULL", reservedDate: () => "NULL" })
+    .where("id = :id AND reserved = :reserved", {
+      id,
+      reserved: (await getUser(req)).id,
+    })
+    .updateEntity(true)
+    .execute();
+  if (!result.affected) {
+    return next(new HttpException(404, { code: "NOT_FOUND" }));
+  }
+  return res.status(204).send("");
+};
+
 export default {
   getList,
   getBottle,
@@ -120,4 +164,6 @@ export default {
   addLike,
   removeLike,
   addClick,
+  reserveBottle,
+  reserveCancelBottle,
 };
