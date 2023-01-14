@@ -34,7 +34,7 @@ export class Bottle extends BaseEntity {
   complete!: boolean;
 
   @Column("datetime", { nullable: true })
-  reservedDate!: Date;
+  reservedDate?: Date;
 
   @Column("varchar", { length: 100, nullable: false })
   title!: string;
@@ -73,5 +73,5 @@ export class Bottle extends BaseEntity {
   lng!: number;
 
   @Column("text", { nullable: true })
-  entrancePassword!: string;
+  entrancePassword?: string;
 }
